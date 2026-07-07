@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import type { OrderItem } from "@/lib/orders";
@@ -5,6 +6,18 @@ import type { Order } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Your Orders",
+  description: "View and manage your WebAiry VPS orders and provisioning status.",
+  alternates: {
+    canonical: "/orders",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function OrdersPage() {
   const session = await getSession();

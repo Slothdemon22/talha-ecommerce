@@ -11,9 +11,62 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "High Performance VPS Hosting with 24/7 Support - WebAiry",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://webairy.com"),
+  title: {
+    default: "WebAiry | High Performance VPS Hosting",
+    template: "%s | WebAiry",
+  },
   description:
-    "WebAiry offers unbeatable prices for US & UK VPS. Robust and dependable Windows-based servers tailored to customer requirements.",
+    "WebAiry offers high-performance VPS hosting with reliable uptime, fast deployment, and responsive support for global businesses.",
+  applicationName: "WebAiry",
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "WebAiry",
+    "VPS hosting",
+    "Windows VPS",
+    "KVM VPS",
+    "managed VPS",
+    "UK VPS hosting",
+    "US VPS hosting",
+  ],
+  authors: [{ name: "WebAiry" }],
+  creator: "WebAiry",
+  publisher: "WebAiry",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: "WebAiry",
+    title: "WebAiry | High Performance VPS Hosting",
+    description:
+      "WebAiry offers high-performance VPS hosting with reliable uptime, fast deployment, and responsive support.",
+    images: [
+      {
+        url: "/images/webairy-logo.png",
+        width: 1200,
+        height: 630,
+        alt: "WebAiry logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WebAiry | High Performance VPS Hosting",
+    description:
+      "WebAiry offers high-performance VPS hosting with reliable uptime, fast deployment, and responsive support.",
+    images: ["/images/webairy-logo.png"],
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+    shortcut: ["/icon.svg"],
+  },
 };
 
 export default async function RootLayout({
