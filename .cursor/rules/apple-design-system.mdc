@@ -1,0 +1,24 @@
+---
+description: Apple-inspired design system — follow DESIGN.md for all UI work
+globs: app/**/*.{tsx,css}, components/**/*.{tsx,css}, **/globals.css
+alwaysApply: false
+---
+
+# Apple Design System
+
+`DESIGN.md` at the project root is the authoritative design reference for this project (installed via `getdesign add apple`).
+
+## Before UI work
+
+1. **Read `DESIGN.md`** before creating or editing components, pages, layouts, or styles.
+2. **Use its tokens** — colors, typography, spacing, radii, shadows, and motion values defined there. Do not invent ad-hoc values.
+3. **Follow its principles** — photography-first layout, minimal chrome, SF Pro font stacks, Action Blue (`#0066cc`) for interactive elements, restrained shadows, no decorative gradients on UI chrome.
+
+## Key constraints
+
+- Primary interactive color: `#0066cc` (focus: `#0071e3`, on dark: `#2997ff`)
+- Text: `#1d1d1f` on light surfaces, `#ffffff` on dark
+- Canvas backgrounds: `#ffffff`, `#f5f5f7`, `#fafafc`
+- Typography: SF Pro Display for headlines, SF Pro Text for body — use the scales in `DESIGN.md`
+
+When generic UI patterns conflict with `DESIGN.md`, **DESIGN.md wins**.
