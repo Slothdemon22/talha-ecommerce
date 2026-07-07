@@ -1,15 +1,10 @@
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import type { OrderItem } from "@/lib/orders";
+import type { Order } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-
-interface OrderItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
 
 export default async function OrdersPage() {
   const session = await getSession();
@@ -18,7 +13,7 @@ export default async function OrdersPage() {
     redirect("/login");
   }
 
-  const orders = await db.order.findMany({
+  const orders: Order[] = await db.order.findMany({
     where: {
       userId: session.userId,
     },
@@ -44,7 +39,7 @@ export default async function OrdersPage() {
                 Your Orders
               </h1>
               <p className="text-[15px] text-ink-muted-80 mt-1">
-                Manage your Aura VPS deployments and order histories.
+                Manage your WebAiry VPS deployments and order histories.
               </p>
             </div>
             {session.name && (
@@ -75,12 +70,12 @@ export default async function OrdersPage() {
             <div className="space-y-2">
               <h2 className="font-display text-[21px] font-semibold text-ink">No orders found</h2>
               <p className="text-[15px] text-ink-muted-80 max-w-sm mx-auto">
-                You haven't placed any orders yet. When you deploy a VPS server plan, it will appear here.
+                You haven&apos;t placed any orders yet. When you deploy a VPS server plan, it will appear here.
               </p>
             </div>
             <div className="pt-2">
               <Button href="/#pricing" variant="primary">
-                Shop Aura VPS
+                Shop WebAiry VPS
               </Button>
             </div>
           </div>

@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aura VPS — High Performance Virtual Servers",
+  title: "High Performance VPS Hosting with 24/7 Support - WebAiry",
   description:
-    "Experience high-performance, low-latency Windows and Linux Virtual Private Servers powered by enterprise KVM virtualization and NVMe SSD nodes.",
+    "WebAiry offers unbeatable prices for US & UK VPS. Robust and dependable Windows-based servers tailored to customer requirements.",
 };
 
 export default async function RootLayout({

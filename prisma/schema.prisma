@@ -20,9 +20,13 @@ model Order {
   id              String   @id @default(uuid())
   userId          String?
   user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  status          String   @default("COMPLETED")
+  customerEmail   String?
+  status          String   @default("PROCESSING")
   totalAmount     Float
   shippingAddress String?
-  items           Json?    // Store order items (productId, quantity, price)
+  items           Json?
   createdAt       DateTime @default(now())
+
+  @@index([customerEmail])
+  @@index([userId])
 }

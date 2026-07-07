@@ -1,44 +1,61 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/Button";
+import { PlanCheckoutLink } from "@/components/ui/PlanCheckoutLink";
+import { vpsPlans } from "@/lib/plans";
+
+const starterPlan = vpsPlans[0];
 
 export function HeroSection() {
   return (
-    <section
-      id="hero"
-      className="relative overflow-hidden bg-canvas px-6 pb-12 pt-10 sm:pb-16 sm:pt-14 lg:px-8 lg:pb-20 lg:pt-16"
-    >
-      <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-10 lg:flex-row lg:items-center lg:gap-16">
-        <div className="flex-1 text-center lg:text-left">
-          <p className="mb-4 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-[13px] font-semibold tracking-wide text-primary">
-            Save up to 44% on Monthly Packages
-          </p>
-          <h1 className="font-display text-hero-display font-semibold tracking-tight text-ink">
-            Unleashing the Power of Mega Sale
+    <section className="relative overflow-hidden bg-canvas px-6 pb-16 pt-10 sm:px-8 sm:pb-20 sm:pt-14 lg:px-8 lg:pb-24 lg:pt-16">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-32 top-0 h-[520px] w-[520px] rounded-full bg-primary/[0.06] blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 bottom-0 h-[360px] w-[360px] rounded-full bg-primary/[0.04] blur-3xl"
+      />
+
+      <div className="relative mx-auto grid max-w-[1200px] items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="max-w-xl space-y-8 lg:py-6">
+          <h1 className="hero-animate hero-animate-1 font-display text-[clamp(2rem,4.5vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-ink text-balance">
+            Launch High Performance VPS Services
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-lead-airy text-ink-muted-80 lg:mx-0">
-            WebAiry offers unbeatable prices for US &amp; UK VPS. We have designed
-            robust and dependable Windows-based servers tailored to customer
-            requirements.
+
+          <p className="hero-animate hero-animate-2 text-[clamp(1.05rem,2vw,1.25rem)] leading-relaxed text-ink-muted-80">
+            Get your service in a few minutes
           </p>
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
-            <Button variant="store-hero" href="#pricing">
+
+          <div className="hero-animate hero-animate-3 flex flex-wrap items-center gap-5 sm:gap-8">
+            <PlanCheckoutLink
+              planId={starterPlan.id}
+              className="hero-cta-btn inline-flex items-center justify-center rounded-full bg-primary px-8 py-3.5 text-[15px] font-semibold text-on-primary transition-[transform,background-color,box-shadow] duration-300 hover:bg-primary-focus hover:shadow-[0_12px_40px_rgba(105,65,165,0.5)] active:scale-[0.96]"
+            >
               Order Now
-            </Button>
-            <Button variant="secondary" href="#contact">
-              Contact Us
-            </Button>
+            </PlanCheckoutLink>
+
+            <div className="flex items-baseline gap-1.5">
+              <span className="font-display text-[clamp(2rem,4vw,2.75rem)] font-semibold leading-none tracking-[-0.02em] text-ink tabular-nums">
+                ${starterPlan.price.toFixed(2)}
+              </span>
+              <span className="text-[15px] text-ink-muted-80">USD /mo</span>
+            </div>
           </div>
         </div>
 
-        <div className="relative w-full max-w-[560px] flex-shrink-0 lg:max-w-none lg:flex-1">
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+        <div className="hero-animate hero-animate-4 relative mx-auto w-full max-w-[560px] lg:max-w-none">
+          <div className="hero-image-float relative">
+            <div
+              aria-hidden="true"
+              className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-primary/10 via-transparent to-primary/5 blur-2xl"
+            />
             <Image
               src="/images/web-air.webp"
-              alt="WebAiry VPS hosting — server infrastructure and cloud management"
-              fill
+              alt="WebAiry VPS hosting infrastructure"
+              width={640}
+              height={480}
               priority
-              className="object-contain object-center"
-              sizes="(max-width: 1024px) 100vw, 560px"
+              className="relative z-10 h-auto w-full object-contain drop-shadow-[0_24px_48px_rgba(61,26,102,0.15)]"
             />
           </div>
         </div>

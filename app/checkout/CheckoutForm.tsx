@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { createOrderAction } from "@/app/actions/checkout";
+import { getCartPlan, saveCartPlan } from "@/lib/cart";
+import { vpsPlans, vpsPlansById } from "@/lib/plans";
 
 type CheckoutStep = "checkout" | "success";
 
@@ -15,24 +16,28 @@ interface CheckoutFormProps {
   } | null;
 }
 
+function getInitialPlanId(planId?: string | null) {
+  if (planId && vpsPlansById[planId]) return planId;
+  if (typeof window !== "undefined") {
+    const fromCart = getCartPlan("vps-8gb");
+    return vpsPlansById[fromCart] ? fromCart : "vps-8gb";
+  }
+  return "vps-8gb";
+}
+
 export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
-  // Parse name parts from initialUser if logged in
   const nameParts = initialUser?.name?.trim().split(/\s+/) || [];
   const initialFirstName = nameParts[0] || "";
   const initialLastName = nameParts.slice(1).join(" ") || "";
 
-  // Dynamic plan details matching page options
-  const vpsPlans: Record<string, { name: string; price: number; disk: string; ram: string }> = {
-    "vps-4gb": { name: "Windows 4GB VPS", price: 10.00, disk: "40GB NVMe SSD", ram: "4GB Dedicated" },
-    "vps-8gb": { name: "Windows 8GB VPS", price: 20.00, disk: "60GB NVMe SSD", ram: "8GB Dedicated" },
-    "vps-16gb": { name: "Windows 16GB VPS", price: 30.00, disk: "120GB NVMe SSD", ram: "16GB Dedicated" },
-  };
+  const [selectedPlanId, setSelectedPlanId] = useState(() => getInitialPlanId(planId));
+  const activePlanId =
+    planId && vpsPlansById[planId] ? planId : selectedPlanId;
 
-  const selectedPlanId = planId && vpsPlans[planId] ? planId : "vps-8gb";
-  const planInfo = vpsPlans[selectedPlanId];
+  const planInfo = vpsPlansById[activePlanId];
   const subtotal = planInfo.price;
-  const tax = subtotal * 0.08; // 8% tax
-  const total = subtotal + tax;
+  const tax = Number((subtotal * 0.08).toFixed(2));
+  const total = Number((subtotal + tax).toFixed(2));
 
   const [step, setStep] = useState<CheckoutStep>("checkout");
   const [email, setEmail] = useState(initialUser?.email || "");
@@ -55,11 +60,13 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
 
     const shippingAddress = `${firstName} ${lastName}, ${address}, ${city}, ${zipCode}`;
     const items = [
-      { productId: selectedPlanId, name: planInfo.name, price: planInfo.price, quantity: 1 }
+      { productId: activePlanId, name: planInfo.name, price: planInfo.price, quantity: 1 }
     ];
 
     try {
       const res = await createOrderAction({
+        planId: activePlanId,
+        customerEmail: email,
         totalAmount: total,
         shippingAddress,
         items,
@@ -72,9 +79,9 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
         setOrderId(res.orderId);
         setStep("success");
       }
-    } catch (err: any) {
-      setLoading(false);
+    } catch {
       setErrorMessage("Something went wrong. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -101,7 +108,7 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
               Thank you for your order.
             </h1>
             <p className="text-[15px] text-ink-muted-80">
-              We've received your payment. Your Aura VPS will begin provisioning shortly.
+              We&apos;ve received your payment. Your WebAiry VPS will begin provisioning shortly.
             </p>
           </div>
 
@@ -124,8 +131,13 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
             </div>
           </div>
 
-          <div className="pt-4">
-            <Button href="/" className="w-full justify-center">
+          <div className="pt-4 flex flex-col gap-3 sm:flex-row">
+            {initialUser && (
+              <Button href="/orders" variant="secondary" className="flex-1 justify-center">
+                View Orders
+              </Button>
+            )}
+            <Button href="/" className="flex-1 justify-center">
               Continue Shopping
             </Button>
           </div>
@@ -216,7 +228,7 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="block w-full rounded-md border border-hairline bg-canvas px-4 py-3 text-[15px] text-ink placeholder-ink-muted-48 outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
-                  placeholder="123 Apple Way"
+                  placeholder="123 Main Street"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -231,7 +243,7 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     className="block w-full rounded-md border border-hairline bg-canvas px-4 py-3 text-[15px] text-ink placeholder-ink-muted-48 outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
-                    placeholder="Cupertino (US Datacenter)"
+                    placeholder="London (UK Datacenter)"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -271,8 +283,8 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
                     maxLength={19}
                     value={cardNumber}
                     onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, "");
-                      let formatted = val.match(/.{1,4}/g)?.join(" ") || "";
+                      const val = e.target.value.replace(/\D/g, "");
+                      const formatted = val.match(/.{1,4}/g)?.join(" ") || "";
                       setCardNumber(formatted);
                     }}
                     className="block w-full rounded-md border border-hairline bg-canvas pl-4 pr-12 py-3 text-[15px] text-ink placeholder-ink-muted-48 outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
@@ -300,7 +312,7 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
                     maxLength={5}
                     value={expiry}
                     onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, "");
+                      const val = e.target.value.replace(/\D/g, "");
                       if (val.length > 2) {
                         setExpiry(val.slice(0, 2) + "/" + val.slice(2, 4));
                       } else {
@@ -341,13 +353,13 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
           </form>
 
           {/* Order Summary */}
-          <aside className="lg:col-span-5 bg-canvas border border-hairline rounded-lg p-6 space-y-6 sticky top-28">
+          <aside className="lg:col-span-5 bg-canvas border border-hairline rounded-lg p-6 space-y-6 sticky top-28 lg:top-32">
             <h2 className="text-[17px] font-semibold tracking-tight text-ink border-b border-divider-soft pb-2">
               Order Summary
             </h2>
 
             <div className="flex gap-4">
-              <div className="relative h-20 w-20 bg-canvas-parchment rounded border border-divider-soft overflow-hidden flex items-center justify-center p-2">
+              <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-divider-soft bg-canvas-parchment p-2">
                 <svg
                   width="40"
                   height="40"
@@ -365,10 +377,29 @@ export function CheckoutForm({ planId, initialUser }: CheckoutFormProps) {
                   <line x1="10" y1="18" x2="18" y2="18" />
                 </svg>
               </div>
-              <div className="flex-1 flex flex-col justify-between">
+              <div className="flex flex-1 flex-col justify-between gap-3">
                 <div>
-                  <h3 className="text-[15px] font-semibold text-ink">{planInfo.name}</h3>
-                  <p className="text-[12px] text-ink-muted-48">RAM: {planInfo.ram} · Storage: {planInfo.disk}</p>
+                  <label htmlFor="plan-select" className="sr-only">
+                    Select VPS plan
+                  </label>
+                  <select
+                    id="plan-select"
+                    value={activePlanId}
+                    onChange={(e) => {
+                      setSelectedPlanId(e.target.value);
+                      saveCartPlan(e.target.value);
+                    }}
+                    className="w-full rounded-lg border border-hairline bg-canvas px-3 py-2 text-[14px] font-semibold text-ink outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+                  >
+                    {vpsPlans.map((plan) => (
+                      <option key={plan.id} value={plan.id}>
+                        {plan.name} — ${plan.price.toFixed(2)}/mo
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-[12px] text-ink-muted-48">
+                    RAM: {planInfo.ram} · Storage: {planInfo.disk}
+                  </p>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-[13px] text-ink-muted-80 font-medium">Qty: 1</span>
